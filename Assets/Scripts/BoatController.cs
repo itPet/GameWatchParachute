@@ -9,7 +9,7 @@ public class BoatController : MonoBehaviour {
     int currentPosition = 0;
 
     private void Start() {
-        transform.position = boatPositions.GetChild(currentPosition).position;
+        //transform.position = boatPositions.GetChild(currentPosition).position;
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
