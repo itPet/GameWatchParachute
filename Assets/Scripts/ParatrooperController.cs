@@ -7,7 +7,7 @@ public class ParatrooperController : MonoBehaviour {
     public Transform trooperPositions;
     public GameManager gameManager;
     int currentPosition = 0;
-    float moveDelay = 0.2f;
+    public float moveDelay;
 
     private void Start() {
         transform.position = trooperPositions.GetChild(currentPosition).position;
@@ -17,27 +17,16 @@ public class ParatrooperController : MonoBehaviour {
     IEnumerator MoveTrooper() {
         while (true) {
             yield return new WaitForSeconds(moveDelay);
-            if (currentPosition < trooperPositions.childCount - 1)
+            if (currentPosition < trooperPositions.childCount - 1) {
                 currentPosition++;
-            else
-                currentPosition = 0;
-            transform.position = trooperPositions.GetChild(currentPosition).position;
-            yield return new WaitForSeconds(0.05f);
-            DestroyTrooper();
+                transform.position = trooperPositions.GetChild(currentPosition).position;
+            }
+            if (LastPosition())
+                gameManager.TrooperLanded(gameObject);
         }
     }
 
-    void DestroyTrooper() {
-        if (currentPosition == trooperPositions.childCount - 1) {
-            if (gameManager.TrooperSaved()) {
-                Debug.Log("Trooper saved!");
-            }
-            else {
-                Debug.Log("Trooper died!");
-            }
-            Destroy(gameObject);
-        }
+    bool LastPosition() {
+        return (currentPosition == trooperPositions.childCount - 1);
     }
-
-
 }

@@ -101,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trooperPositions: {fileID: 0}
   gameManager: {fileID: 0}
+  moveDelay: 100
 --- !u!212 &212076972119802740
 SpriteRenderer:
   m_ObjectHideFlags: 1

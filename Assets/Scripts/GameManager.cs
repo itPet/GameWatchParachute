@@ -5,41 +5,85 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
     public Collider2D boatCollider;
-    public Collider2D trooperCollider;
     public GameObject paratrooperPrefab;
     public Transform positionsA;
     public Transform positionsB;
     public Transform positionsC;
+    public TextMesh scoreLabel;
+    public LivesController livesController;
+    public float moveDelay = 1f;
+    public float reduceMoveDelay = 0.1f;
+    public int spawnDelay = 7;
+    public int nextLevel = 3;
     GameObject newTrooper;
+    int score = 0;
 
 	// Use this for initialization
 	void Start () {
-        Debug.Log("Trooper Created");
-        NewTrooper();
-	}
-	
+        StartCoroutine(SpawnNewTroopers());
+    }
+
+    IEnumerator SpawnNewTroopers() {
+        while (true) {
+            NewTrooper();
+            yield return new WaitForSeconds((moveDelay * spawnDelay));
+        }
+    }
+
     void NewTrooper() {
         newTrooper = Instantiate(paratrooperPrefab);
         newTrooper.GetComponent<ParatrooperController>().gameManager = this;
-        trooperCollider = newTrooper.GetComponent<Collider2D>();
+        newTrooper.GetComponent<ParatrooperController>().moveDelay = moveDelay;
 
         int random = (int)Random.Range(1, 4);
-        if (random == 1)    
-            newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsA;
-        else if (random == 2)
-            newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsB;
-        else if (random == 3)
-            newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsC;
+        switch (random)
+        {
+            case 1:
+                newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsA;
+                break;
+            case 2:
+                newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsB;
+                break;
+            case 3:
+                newTrooper.GetComponent<ParatrooperController>().trooperPositions = positionsC;
+                break;
+        }
     }
 
-    public bool TrooperSaved() {
-        if (boatCollider.IsTouching(trooperCollider)) {
-            NewTrooper();
-            return true;
-        } else {
-            NewTrooper();
-            return false;
-        }
+    public void TrooperLanded(GameObject currentTrooper) {
+        if (TrooperSurvived(currentTrooper))
+            IncreaseScore();
+        else
+            LoseLife();
+        Destroy(currentTrooper);
+    }
 
+    bool TrooperSurvived(GameObject currentTrooper) {
+        return boatCollider.IsTouching(currentTrooper.GetComponent<Collider2D>());
+    }
+
+    void IncreaseScore() {
+        score++;
+        scoreLabel.text = "Score: " + score.ToString();
+        if (score == nextLevel)
+            LevelUp();
+    }
+
+    void LoseLife() {
+        livesController.RemoveHeart();
+        if (livesController.transform.childCount == 0)
+            GameOver();
+    }
+
+    void GameOver() {
+        Debug.Log("Game Over!");
+    }
+
+    void LevelUp() {
+        nextLevel *= 2;
+        if (moveDelay > reduceMoveDelay)
+            moveDelay -= reduceMoveDelay;
+        if (spawnDelay > 1)
+            spawnDelay -= 1;
     }
 }

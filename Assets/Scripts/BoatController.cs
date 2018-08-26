@@ -6,10 +6,10 @@ public class BoatController : MonoBehaviour {
 
     public Transform boatPositions;
     SpriteRenderer spriteRenderer;
-    int currentPosition = 0;
+    int currentPosition = 1;
 
     private void Start() {
-        //transform.position = boatPositions.GetChild(currentPosition).position;
+        transform.position = boatPositions.GetChild(currentPosition).position;
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
