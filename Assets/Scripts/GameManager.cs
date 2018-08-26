@@ -10,13 +10,19 @@ public class GameManager : MonoBehaviour {
     public Transform positionsB;
     public Transform positionsC;
     public TextMesh scoreLabel;
+    public TextMesh levelLabel;
     public LivesController livesController;
-    public float moveDelay = 1f;
-    public float reduceMoveDelay = 0.1f;
-    public int spawnDelay = 7;
-    public int nextLevel = 3;
+    [Range(0.1f, 1)]
+    public float moveDelay;
+    [Range(0.1f, 0.3f)]
+    public float reduceMoveDelay;
+    [Range(1, 7)]
+    public int spawnDelay;
+    [Range(1, 10)]
+    public int nextLevel;
     GameObject newTrooper;
     int score = 0;
+    int level = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -80,7 +86,12 @@ public class GameManager : MonoBehaviour {
     }
 
     void LevelUp() {
-        nextLevel *= 2;
+        if (moveDelay > reduceMoveDelay || spawnDelay > 1) {
+            level++;
+            levelLabel.text = "Level: " + level;
+            nextLevel *= 2;
+        }
+
         if (moveDelay > reduceMoveDelay)
             moveDelay -= reduceMoveDelay;
         if (spawnDelay > 1)
